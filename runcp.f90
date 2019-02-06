@@ -386,8 +386,8 @@
        emadt2 = dt2bye * ema0bg
        emaver = emadt2 * verl3
 !
-       IF( nupdwn(1) /= (nupdwn(2) + 1) ) &
-          CALL errore(' runcp_force_pairing ',' inconsistent number of states ', 1)
+       !IF( nupdwn(1) /= (nupdwn(2) + 1) ) &
+       !   CALL errore(' runcp_force_pairing ',' inconsistent number of states ', 1)
 
        n_unp = nupdwn(1)
        n_dwn = nupdwn(2)
