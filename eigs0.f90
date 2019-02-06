@@ -115,17 +115,24 @@
             !  store unpaired state
             !
             ei( 1:n,       1 ) = ei( 1:n, 1 ) / 2.0d0
-            ei( nupdwn(1), 1 ) = 0.0d0
+            ei( n+1:nupdwn(1), 1 ) = 0.0d0
             if( desc( iss )%active_node > 0 ) then
                IF( desc( iss )%myc == desc( iss )%myr ) THEN
                   ir = desc( iss )%ir
                   nr = desc( iss )%nr
-                  IF( nupdwn(1) >= ir .AND. nupdwn(1) < ir + nr ) then
-                     ei( nupdwn(1), 1 ) = lambda( nupdwn(1)-ir+1, nupdwn(1)-ir+1, 1 )
-                  end if
+                  do i = n+1, nupdwn(1)
+                     IF(i >= ir .AND. i < ir + nr) then
+                        ei(i,1) = lambda( i-ir+1, i-ir+1, 1 )
+                     end if
+                  end do
+                  !IF( nupdwn(1) >= ir .AND. nupdwn(1) < ir + nr ) then
+                  !   ei( nupdwn(1), 1 ) = lambda( nupdwn(1)-ir+1, nupdwn(1)-ir+1, 1 )
+                  !end if
                END IF
             endif
-            call mp_sum( ei( nupdwn(1), 1 ), intra_bgrp_comm )
+            do i = n+1, nupdwn(1)
+               call mp_sum( ei( i, 1 ), intra_bgrp_comm )
+            end do
             !
          END IF
 
