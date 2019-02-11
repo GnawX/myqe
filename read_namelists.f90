@@ -1450,9 +1450,9 @@ MODULE read_namelists_module
           IF ( nspin /= 2 ) &
              CALL errore( sub_name, &
                         & ' invalid nspin with sic activated', 1 )
-          IF ( tot_magnetization /= 1._DP )  &
-             CALL errore( sub_name, &
-                  & ' invalid tot_magnetization_ with sic activated', 1 )
+          !IF ( tot_magnetization /= 1._DP )  &
+          !   CALL errore( sub_name, &
+          !        & ' invalid tot_magnetization_ with sic activated', 1 )
           !
        ENDIF
        !
