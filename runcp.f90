@@ -397,7 +397,7 @@
        ALLOCATE( occ( nbspx ) )
 !
        occ( 1:np_dw )  = 1.0d0
-       occ( nbspx   )  = 0.0d0
+       occ( np_dw+1:nbspx   )  = 0.0d0
 !
 ! c0(dwn_paired) == c0(up_paired)
 ! cm(dwn_paired) == cm(up_paired)
@@ -407,8 +407,8 @@
       c0(:, is_dw:np_dw ) = c0(:, 1:n_dwn )
       cm(:, is_dw:np_dw ) = cm(:, 1:n_dwn )
 !
-      c0(:, nbspx ) = (0.d0, 0.d0)
-      cm(:, nbspx ) = (0.d0, 0.d0)
+      c0(:, np_dw+1:nbspx ) = (0.d0, 0.d0)
+      cm(:, np_dw+1:nbspx ) = (0.d0, 0.d0)
 !
      IF( MOD(n_unp, 2) == 0 ) npair = n_unp - 2
      IF( MOD(n_unp, 2) /= 0 ) npair = n_unp - 1
@@ -465,8 +465,8 @@
       c0(:, is_dw:np_dw ) = c0(:, 1:n_dwn )
       cm(:, is_dw:np_dw ) = cm(:, 1:n_dwn )
 !
-      c0(:, nbspx ) = (0.d0, 0.d0)
-      cm(:, nbspx ) = (0.d0, 0.d0)
+      c0(:, np_dw+1:nbspx ) = (0.d0, 0.d0)
+      cm(:, np_dw+1:nbspx ) = (0.d0, 0.d0)
 !
 
 !
@@ -474,25 +474,26 @@
 ! for the unpaired electron the ei_unp is the value of lambda
 ! "TRUE" ONLY WHEN THE POT is NORM_CONSERVING
 !
-
-      CALL dforce( n_unp, bec, vkb, c0, c2, c3, rhos, SIZE(rhos,1), ispin,f,n,nspin )
+   DO i = n_dwn+1, n_unp
+      CALL dforce( i, bec, vkb, c0, c2, c3, rhos, SIZE(rhos,1), ispin,f,n,nspin )
       !
-      intermed  = - 2.d0 * sum(c2 * conjg(c0(:,n_unp)))
+      intermed  = - 2.d0 * sum(c2 * conjg(c0(:,i)))
       IF ( gstart == 2 ) THEN
-        intermed  = intermed + 1.d0 * c2(1) * conjg(c0(1,n_unp))
+        intermed  = intermed + 1.d0 * c2(1) * conjg(c0(1,i))
       END IF
       CALL mp_sum ( intermed, intra_bgrp_comm )
       !           
-      IF( iflag == 2 ) cm(:, n_unp) = c0(:, n_unp) 
+      IF( iflag == 2 ) cm(:, i) = c0(:, i) 
       !
       IF( ttsde ) THEN
-        CALL wave_steepest( cm(:, n_unp), c0(:, n_unp), emaver, c2 )
+        CALL wave_steepest( cm(:, i), c0(:, i), emaver, c2 )
       ELSE
-        CALL wave_verlet( cm(:, n_unp), c0(:, n_unp), verl1, verl2, emaver, c2 )
+        CALL wave_verlet( cm(:, i), c0(:, i), verl1, verl2, emaver, c2 )
       ENDIF 
       !
-      IF ( gstart == 2 ) cm(1, n_unp) = CMPLX(DBLE(cm(1, n_unp)),0.d0,kind=DP)
+      IF ( gstart == 2 ) cm(1, i) = CMPLX(DBLE(cm(1, i)),0.d0,kind=DP)
       !
+   END DO
       DEALLOCATE( occ )
       DEALLOCATE( emadt2 )
       DEALLOCATE( emaver )
