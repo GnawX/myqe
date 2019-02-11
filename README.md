@@ -1,3 +1,3 @@
 # myqe
 read_namelist in Modules
-others in CPV/src
+while others in CPV/src
